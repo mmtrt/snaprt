@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#
+# Author:
+#   mmtrt [Taqi Raza]
+#
+# Description:
+#   Snap Revision Timmer (SnapRT)
+#
+# Date: Jul 15 2018
+#
+
+# side script file in tmp dir
+rmsr="/tmp/rms"
+
+# exec side script
+exrmsr=". $rmsr"
+
+# shows snap revisions that can be removed
+function catrms() {
+    cat $rmsr | sed '1d;s/--revision/r/g;s/=//g' | awk '{print $3,$4}'
+}
+
+# get currently installed snap names.
+snap_names=$(snap list | sed '1d' | awk '{printf "%s ",$1}')
+
+# create side script to add data
+echo "#!/usr/bin/env bash" > $rmsr
+chmod +x $rmsr
+
+for f in $snap_names
+    do
+
+    # check how many snap revisions are installed & get its num.
+    check_num=$(ls /var/lib/snapd/snaps/ | grep -e $f | wc -l)
+    # check snap installed current revision on system using.
+    check_cur_rev=$(snap list | grep -e $f | awk '{print $3}')
+
+    if [ $check_num -eq 2 ]; then
+        for rev in $(ls /var/lib/snapd/snaps/ | grep -e '.snap' | sed 's|_| |g;s|.snap||' | grep -e $f |  awk '{printf "%s ",$2}')
+            do
+                if [[ $rev != $check_cur_rev ]]; then
+                    echo "snap remove $f --revision=$rev" >> $rmsr
+                fi
+        done
+    fi
+
+    if [ $check_num -eq 3 ]; then
+        for revs in $(ls /var/lib/snapd/snaps/ | grep -e '.snap' | sed 's|_| |g;s|.snap||' | grep -e $f |  awk '{printf "%s ",$2}')
+            do
+                if [[ $revs != $check_cur_rev ]]; then
+                    echo "snap remove $f --revision=$revs" >> $rmsr
+                fi
+        done
+    fi
+done
+
+if [[ $(catrms | wc -c) -ne 0 ]]; then
+    clear
+    echo "Do you want to remove these snap revisions?"
+    echo ""
+    catrms
+    echo ""
+    while true; do
+        read -p "(y/n): " -n 1 -s yn
+        case $yn in
+            [Yy]* ) clear; $exrmsr; rm $rmsr; break;;
+            [Nn]* ) clear; rm $rmsr; exit;;
+            * ) echo "Wrong Key Pressed!!";;
+        esac
+    done
+    else
+    rm $rmsr
+    clear
+    echo ""
+    echo "No extra revision of snaps to be found!"
+    echo ""
+fi
