@@ -34,9 +34,21 @@ for f in $snap_names
     check_num=$(ls /var/lib/snapd/snaps/ | grep -e $f | wc -l)
     # check snap installed current revision on system using.
     check_cur_rev=$(snap list | grep -e $f | awk '{print $3}')
+    # check revs of snap
+    check_rev=$(ls /var/lib/snapd/snaps/ | grep -e '.snap' | sed 's|_| |g;s|.snap||' | grep -e $f |  awk '{printf "%s ",$2}')
+
+    if [ $f == 'core' ]; then
+        check_num=$(ls /var/lib/snapd/snaps/ | awk '! /core18/' | awk '/core/' | wc -l)
+        check_cur_rev=$(snap list | awk '! /core18/' | awk '/core/' | awk '{print $3}')
+        check_rev=$(ls /var/lib/snapd/snaps/ | awk '! /core18/' | awk '/core/' | sed 's|_| |g;s|.snap||' |  awk '{printf "%s ",$2}')
+    elif [ $f == 'core18' ]; then
+        check_num=$(ls /var/lib/snapd/snaps/ | awk '/core18/' | wc -l)
+        check_cur_rev=$(snap list | awk '/core18/' | awk '{print $3}')
+        check_rev=$(ls /var/lib/snapd/snaps/ | awk '/core18/' | sed 's|_| |g;s|.snap||' |  awk '{printf "%s ",$2}')
+    fi
 
     if [ $check_num -eq 2 ]; then
-        for rev in $(ls /var/lib/snapd/snaps/ | grep -e '.snap' | sed 's|_| |g;s|.snap||' | grep -e $f |  awk '{printf "%s ",$2}')
+        for rev in $check_rev
             do
                 if [[ $rev != $check_cur_rev ]]; then
                     echo "snap remove $f --revision=$rev" >> $rmsr
@@ -45,7 +57,7 @@ for f in $snap_names
     fi
 
     if [ $check_num -eq 3 ]; then
-        for revs in $(ls /var/lib/snapd/snaps/ | grep -e '.snap' | sed 's|_| |g;s|.snap||' | grep -e $f |  awk '{printf "%s ",$2}')
+        for revs in $check_rev
             do
                 if [[ $revs != $check_cur_rev ]]; then
                     echo "snap remove $f --revision=$revs" >> $rmsr
