@@ -45,6 +45,10 @@ for f in $snap_names
         check_num=$(ls /var/lib/snapd/snaps/ | awk '/core18/' | wc -l)
         check_cur_rev=$(snap list | awk '/core18/' | awk '{print $3}')
         check_rev=$(ls /var/lib/snapd/snaps/ | awk '/core18/' | sed 's|_| |g;s|.snap||' |  awk '{printf "%s ",$2}')
+    elif [ $f == 'cncra' ]; then
+        check_num=$(ls /var/lib/snapd/snaps/ | awk '! /cncra2/' | awk '/cncra/' | wc -l)
+        check_cur_rev=$(snap list | awk '! /cncra2/' | awk '/cncra/' | awk '{print $3}')
+        check_rev=$(ls /var/lib/snapd/snaps/ | awk '! /cncra2/' | awk '/cncra/' | sed 's|_| |g;s|.snap||' |  awk '{printf "%s ",$2}')
     fi
 
     if [ $check_num -eq 2 ]; then
