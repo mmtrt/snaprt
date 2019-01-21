@@ -35,16 +35,16 @@ for f in $snap_names
     # check snap installed current revision on system using.
     check_cur_rev=$(snap list | grep -e $f | awk '{print $3}')
     # check revs of snap
-    check_rev=$(ls /var/lib/snapd/snaps/ | grep -e '.snap' | sed 's|_| |g;s|.snap||' | grep -e $f |  awk '{printf "%s ",$2}')
+    check_rev=$(ls /var/lib/snapd/snaps/ | grep -e '.snap' | sed 's|_| |g' | grep -e $f |  awk '{printf "%s ",$2}' | sed 's|.snap||g')
 
     if [ $f == 'core' ]; then
         check_num=$(ls /var/lib/snapd/snaps/ | awk '! /core18/' | awk '/core/' | wc -l)
         check_cur_rev=$(snap list | awk '! /core18/' | awk '/core/' | awk '{print $3}')
-        check_rev=$(ls /var/lib/snapd/snaps/ | awk '! /core18/' | awk '/core/' | sed 's|_| |g;s|.snap||' |  awk '{printf "%s ",$2}')
+        check_rev=$(ls /var/lib/snapd/snaps/ | awk '! /core18/' | awk '/core/' | sed 's|_| |g' |  awk '{printf "%s ",$2}' | sed 's|.snap||g')
     elif [ $f == 'cncra' ]; then
         check_num=$(ls /var/lib/snapd/snaps/ | awk '! /cncra2/' | awk '/cncra/' | wc -l)
         check_cur_rev=$(snap list | awk '! /cncra2/' | awk '/cncra/' | awk '{print $3}')
-        check_rev=$(ls /var/lib/snapd/snaps/ | awk '! /cncra2/' | awk '/cncra/' | sed 's|_| |g;s|.snap||' |  awk '{printf "%s ",$2}')
+        check_rev=$(ls /var/lib/snapd/snaps/ | awk '! /cncra2/' | awk '/cncra/' | sed 's|_| |g' |  awk '{printf "%s ",$2}' | sed 's|.snap||g')
     fi
 
     if [ $check_num -eq 2 ]; then
