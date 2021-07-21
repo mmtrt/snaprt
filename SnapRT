@@ -33,7 +33,7 @@ for f in $snap_names
     # check how many snap revisions are installed & get its num.
     check_num=$(snap list --all | grep -c "$f")
     # check snap installed current revision on system using.
-    check_cur_rev=$(snap list | grep "$f" | sed '/disabled/d' | awk '{print $3}')
+    check_cur_rev=$(snap list --all | grep "$f" | sed '/disabled/d' | awk '{print $3}')
     # check revs of snap
     check_rev=$(snap list --all | grep "$f" | grep disabled | awk '{print $3}')
 
