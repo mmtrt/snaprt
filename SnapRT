@@ -17,7 +17,7 @@ exrmsr=". $rmsr"
 
 # shows snap revisions that can be removed
 function catrms() {
-    cat $rmsr | sed '1d;s/--revision//g;s/=//g' | awk '{print $3,$4}'
+    < $rmsr sed '1d;s/--revision//g;s/=//g' | awk '{print $3,$4}'
 }
 
 # get currently installed snap names.
