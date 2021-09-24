@@ -20,6 +20,11 @@ function catrms() {
     < $rmsr sed '1d;s/--revision//g;s/=//g' | awk '{print $3,$4}'
 }
 
+# using en_US lang with snap list avoid any locale issues
+function snap_list() {
+    LANG=en_US.UTF-8 snap list --all
+}
+
 # get currently installed snap names.
 snap_names=$(snap list --all | sed '/disabled/d' | awk '{print $1}')
 
